@@ -1,0 +1,32 @@
+{
+    "id": "704230CF",
+    "path": null,
+    "project_path": null,
+    "type": "r_dataframe",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1595792049362.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "expression": "book_sales",
+        "caption": "book_sales",
+        "totalObservations": 5000,
+        "displayedObservations": 5000,
+        "variables": 5,
+        "cacheKey": "19657293",
+        "object": "book_sales",
+        "environment": "",
+        "contentUrl": "grid_resource/gridviewer.html?env=&obj=book_sales&cache_key=19657293&max_cols=50",
+        "preview": 0
+    },
+    "folds": "",
+    "lastKnownWriteTime": 2720804821920,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1595792049362,
+    "read_only": false,
+    "read_only_alternatives": []
+}

@@ -1,0 +1,7 @@
+"0","book_sales_cleaned_dates %>%"
+"0","  group_by(date_status,title)%>%"
+"0","  summarise("
+"0","    total_purchased = sum(total_purchased),"
+"0","    .groups=""drop"""
+"0","  )%>%"
+"0","  arrange(title, desc(date_status))"

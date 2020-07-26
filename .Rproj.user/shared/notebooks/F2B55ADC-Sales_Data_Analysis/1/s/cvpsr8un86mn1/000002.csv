@@ -1,0 +1,6 @@
+"0","book_sales_cleaned <- book_sales_cleaned %>%"
+"0","  mutate("
+"0","    total_purchased = if_else(is.na(total_purchased), "
+"0","                              as.numeric(avg_purchased_value), "
+"0","                              total_purchased)"
+"0","  )"

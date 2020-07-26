@@ -1,0 +1,3 @@
+"0","avg_purchased_value <-as.integer(mean(book_sales_cleaned$total_purchased, "
+"0","                            na.rm = TRUE))"
+"0",""

@@ -1,0 +1,229 @@
+---
+title: "Sales_Data_Analyses"
+author: "Kathan Vakharia"
+date: "26/07/2020"
+output: html_document
+---
+
+## Introduction
+
+* This project analyzes the 2019 book sales of a company.The dataset can be found [here](https://data.world/dataquest/book-sales-data)
+
+The company had organized a program on **July 1st 2019** in which they encouraged their customers to buy more books. So our main goal is to  analyze and check if that program made any impact on the book sales.
+
+```{r initial_setup, message=FALSE}
+#importing the data set
+library(tidyverse)
+
+book_sales <- read_csv("../datasets/sales2019.csv")
+```
+
+### Let's explore the data set 
+```{r}
+glimpse(book_sales)
+```
+
+So we found out that there are **`r nrow(book_sales)`** rows  and **`r ncol(book_sales)`** columns in `book_sales` data set.
+
+```{r}
+#getting column names
+column_vector <- colnames(book_sales)
+print(column_vector)
+
+```
+```{r}
+#displaying data types of every column
+for (column in column_vector){
+  print(str_c(column,": ", typeof(book_sales[[column]])))
+}
+```
+
+### Handling NA values
+
+Now, we need to take into account if any column contains *NA* values,
+```{r}
+#'2' represents apply the function on columns
+
+#This is logical vector with elements having value TRUE if a column has NA and FALSE otherwise
+is_NA <- apply(book_sales, 2, function(c) any(is.na(c)))
+
+column_with_NA <- column_vector[is_NA]
+print(column_with_NA)
+
+```
+
+So we can see **`r column_with_NA`** columns contains NA values.Let's first handle `user_submitted_review` column  and remove all the rows which have NA values for this column.
+
+```{r removing NA reviews}
+book_sales_cleaned <- book_sales %>%
+  filter(!is.na(user_submitted_review))
+```
+
+- Now, we will impute mean of `total_purchased` in all the rows with NA values of `total_purchased` column
+```{r}
+avg_purchased_value <-as.integer(mean(book_sales_cleaned$total_purchased, 
+                            na.rm = TRUE))
+
+```
+
+```{r imputing purchased values}
+book_sales_cleaned <- book_sales_cleaned %>%
+  mutate(
+    total_purchased = if_else(is.na(total_purchased), 
+                              as.numeric(avg_purchased_value), 
+                              total_purchased)
+  )
+```
+
+### Handling reviews
+
+As user reviews are in strings, it is better to convert those rows with
+logical values, where 
+<blockquote>
+1. TRUE-positive review
+2. FALSE-negative  review
+</blockquote>
+
+```{r Handling reviews}
+#Checking the unique reviews
+print(unique(book_sales_cleaned$user_submitted_review))
+#function to check if a review was positive
+is_positive <- function(review){
+  output <- case_when(
+    str_detect(review, "okay") ~ TRUE,
+    str_detect(review, "Awesome") ~ TRUE,
+    str_detect(review, "learned") ~ TRUE,
+    str_detect(review, "Never") ~ TRUE,
+    str_detect(review, "OK") ~ TRUE,
+    TRUE ~ FALSE
+
+  )
+}
+#updating the book sales data
+book_sales_cleaned <- book_sales_cleaned %>%
+  mutate(
+    review_positive = unlist(map(user_submitted_review, is_positive))
+  )
+
+```
+
+### Standardizing the date column
+
+Now we will convert all the dates into standardized **YYYY/MM/DD** format.
+And finally we will create a new column in which we will mark if the date was before the program or not.
+<blockquote>
+1. PRE - if it was before the program
+2. POST - if it was after the program
+</blockquote>
+```{r}
+
+book_sales_cleaned_dates <- book_sales_cleaned %>%
+  mutate(
+    date = lubridate::mdy(date),
+    date_status = if_else(date < lubridate::ymd("2019-07-1"), 
+                          "PRE", "POS")
+  ) %>%
+  arrange(desc(date))
+```
+
+### Analyzing the purchases to see how it affected the popularity
+
+Let's see the sales before and after the program
+```{r}
+book_sales_cleaned_dates %>%
+  group_by(date_status)%>%
+  summarise(
+    total_purchased = sum(total_purchased),
+    .groups="drop"
+  )%>%
+  arrange(desc(date_status))
+```
+Looking at the result, seems like after the program the overall sales went down.But there might be a chance that different books performed different.
+
+Let's group this dates by their **date_status and title** both to examine the number of purchases for particular book.
+
+```{r}
+book_sales_cleaned_dates %>%
+  group_by(date_status,title)%>%
+  summarise(
+    total_purchased = sum(total_purchased),
+    .groups="drop"
+  )%>%
+  arrange(title, desc(date_status))
+```
+Seems like **R for Dummies** and **Secrets Of R For Advanced Students** got more popular while rest either had a minimal growth or even lost their popularity.
+
+
+Before jumping into conclusions let's analyze the sales by grouping the 
+**customer_type** to see if there is some relation between popularity and customer_type.
+
+```{r}
+book_sales_cleaned_dates %>%
+  group_by(date_status,customer_type)%>%
+  summarise(
+    total_purchased = sum(total_purchased),
+    .groups = "drop"
+    )%>%
+  arrange(customer_type, desc(date_status))
+```
+So, in general we can say that Business customers purchased more books after the program while the popularity among individual customers went down.
+
+Just for sake of completion, let's see how each books' purchase was affected by type of customer type.
+```{r}
+book_sales_cleaned_dates %>%
+  group_by(date_status, title, customer_type)%>%
+  summarise(
+    total_purchased = sum(total_purchased),
+    .groups="drop"
+  )%>%
+  arrange(customer_type, title, desc(date_status)) %>%
+  print(n = Inf)
+```
+
+### Analyzing the reviews sentiment
+
+Let's wrap our analysis by comparing the amount of positive reviews before and after the program
+
+```{r analysing positive reviews}
+book_sales_cleaned_dates %>%
+  group_by(date_status, review_positive)%>%
+  summarise(
+    total_pos_review = sum(review_positive),
+    .groups="drop"
+  )%>%
+  filter(
+    total_pos_review != 0
+  )%>%
+  arrange(desc(date_status))
+
+```
+There's negligible difference between the positive reviews before and after the program.
+
+
+## Conclusion
+
+We conclude that, there is overall negligible difference in the sales of the book due the program.
+
+Limitation:Imputation of total_purchase can be improved by imputing mean of total purchases for a specific book.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

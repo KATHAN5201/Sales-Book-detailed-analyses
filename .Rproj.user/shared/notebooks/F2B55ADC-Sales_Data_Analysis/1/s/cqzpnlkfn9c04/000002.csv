@@ -1,0 +1,8 @@
+"0",""
+"0","book_sales_cleaned_dates <- book_sales_cleaned %>%"
+"0","  mutate("
+"0","    date = lubridate::mdy(date),"
+"0","    date_status = if_else(date < lubridate::ymd(""2019-07-1""), "
+"0","                          ""PRE"", ""POS"")"
+"0","  ) %>%"
+"0","  arrange(desc(date))"

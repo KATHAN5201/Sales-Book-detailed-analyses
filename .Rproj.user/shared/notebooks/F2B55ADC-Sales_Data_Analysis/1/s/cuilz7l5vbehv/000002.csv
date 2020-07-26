@@ -1,0 +1,2 @@
+"0","book_sales_cleaned <- book_sales %>%"
+"0","  filter(!is.na(user_submitted_review))"

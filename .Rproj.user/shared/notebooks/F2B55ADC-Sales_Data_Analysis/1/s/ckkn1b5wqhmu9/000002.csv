@@ -1,0 +1,4 @@
+"0","#importing the data set"
+"0","library(tidyverse)"
+"0",""
+"0","book_sales <- read_csv(""../datasets/sales2019.csv"")"

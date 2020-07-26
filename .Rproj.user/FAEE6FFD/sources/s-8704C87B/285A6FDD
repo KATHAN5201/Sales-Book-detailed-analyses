@@ -1,0 +1,32 @@
+{
+    "id": "285A6FDD",
+    "path": null,
+    "project_path": null,
+    "type": "r_dataframe",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1595785335819.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "expression": "book_sales_cleaned_dates",
+        "caption": "book_sales_cleaned_dates",
+        "totalObservations": "4115",
+        "displayedObservations": "4115",
+        "variables": "7",
+        "cacheKey": "825AF3E4",
+        "object": "book_sales_cleaned_dates",
+        "environment": "",
+        "contentUrl": "grid_resource/gridviewer.html?env=&obj=book_sales_cleaned_dates&cache_key=825AF3E4&max_cols=50",
+        "preview": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1595785231,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1595785335819,
+    "read_only": false,
+    "read_only_alternatives": []
+}
